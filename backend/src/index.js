@@ -10,13 +10,17 @@ const BASE_URL = `http://localhost:${PORT}`;
 
 const typeDefs = fs.readFileSync(`${__dirname}/schema.graphql`, 'utf-8');
 let favorites = new Map();
+let pokemons = [];
 
 const app = express();
 app.get('/sounds/:id', (req, res) => res.sendFile(`${__dirname}/sounds/${req.params.id}.mp3`));
+/* app.post('/pokemons', (req, res) => { this.pokemons = req.body; console.log(pokemons); res.send(pokemons) });
+app.get('/pokemon/:id', (req, res) => { res.send() }); */
 
 const resolvers = {
   Query: {
     pokemons: (__, args) => {
+      console.log(args);
       const { limit, offset, search, filter } = args.query;
       let pokemons = pokemonsData;
 
@@ -28,7 +32,7 @@ const resolvers = {
       if (filter) {
         if (filter.type) {
           const regex = new RegExp(filter.type, 'i');
-          pokemons = _.filter(pokemons,p => _.some(p.types, t => t.match(regex)));
+          pokemons = _.filter(pokemons, p => _.some(p.types, t => t.match(regex)));
         }
 
         if (filter.isFavorite) {
@@ -47,7 +51,7 @@ const resolvers = {
       }
     },
     pokemonById: (_, args) => pokemonsData.find(pokemon => pokemon.id === args.id),
-    pokemonByName: (_, args ) => pokemonsData.find(pokemon => pokemon.name.toLowerCase() === args.name.toLowerCase()),
+    pokemonByName: (_, args) => pokemonsData.find(pokemon => pokemon.name.toLowerCase() === args.name.toLowerCase()),
     pokemonTypes: () => _.uniq(_.flatMap(pokemonsData, pokemon => pokemon.types))
   },
   Mutation: {
@@ -68,7 +72,7 @@ const resolvers = {
     number: pokemon => parseInt(pokemon.id, 10),
     image: pokemon => `https://img.pokemondb.net/artwork/${pokemon.name.toLowerCase().replace(/[&\\/\\\\#,+()$~%.'":*?<>{}]/g, '').replace(' ', '-')}.jpg`,
     sound: pokemon => `${BASE_URL}/sounds/${parseInt(pokemon.id, 10)}`,
-    evolutions: pokemon => _.map(pokemon.evolutions || [], ev => ({...ev, id: _.padStart(ev.id, 3, '0')})),
+    evolutions: pokemon => _.map(pokemon.evolutions || [], ev => ({ ...ev, id: _.padStart(ev.id, 3, '0') })),
     isFavorite: pokemon => !!favorites.get(pokemon.id)
   },
   PokemonAttack: {
