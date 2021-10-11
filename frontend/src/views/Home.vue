@@ -174,7 +174,7 @@ export default {
         if (document.body.scrollHeight < window.outerHeight) {
           this.getPokemons(false);
         }
-      }, 500);
+      }, 100);
     },
     getPokemonTypes() {
       //Get all the pokemon Types and show it in the dropdown!
@@ -186,16 +186,6 @@ export default {
           });
       } catch (error) {
         console.error(error);
-      }
-    },
-    getNextPokemons() {
-      if (this.$route.name == "" || this.$route.name == "home") {
-        let bottomOfWindow =
-          document.documentElement.scrollTop + window.innerHeight >=
-          document.documentElement.offsetHeight;
-        if (bottomOfWindow) {
-          this.getPokemons(false);
-        }
       }
     },
     getPokemons(initial = true) {
@@ -226,14 +216,17 @@ export default {
             this.isLoading = false;
             if (initial) {
               this.pokemons = _response.pokemons.edges;
+
+              //Check for the length of pokemon list, if its greater or equal to the limit than only we will have chances to have more in DB.
               if (this.pokemons.length >= this.limit) {
                 setTimeout(() => {
                   if (document.body.scrollHeight < window.outerHeight) {
                     this.getPokemons(false);
                   }
-                }, 500);
+                }, 100);
               }
             } else {
+              // On lazy load response, put all the new pokemons to the original list and show it on page
               this.pokemons = this.pokemons.concat(_response.pokemons.edges);
             }
           });
@@ -242,6 +235,16 @@ export default {
           this.offset -= this.limit;
         }
         console.error(error);
+      }
+    },
+    getNextPokemons() {
+      if (this.$route.name == "" || this.$route.name == "home") {
+        let bottomOfWindow =
+          document.documentElement.scrollTop + window.innerHeight >=
+          document.documentElement.offsetHeight;
+        if (bottomOfWindow) {
+          this.getPokemons(false);
+        }
       }
     },
     goToPokemon(_name) {
