@@ -6,7 +6,6 @@
 
 <style lang="scss">
 body {
-  max-width: 1140px;
   margin: auto;
 }
 #app {
@@ -15,10 +14,6 @@ body {
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
   color: #2c3e50;
-}
-
-.flex-grow {
-  flex-grow: 1;
 }
 .favorite {
   position: relative;

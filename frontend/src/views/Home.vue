@@ -1,23 +1,23 @@
 <template>
-  <div class="home">
-    <div id="tabs">
+  <div class="home container">
+    <div id="tabs" class="row">
       <div
-        class="tab all"
+        class="tab all col-sm-6 col-lg-6"
         :class="{ selected: !isFavorite }"
         @click="selectTab(false)"
       >
         All
       </div>
       <div
-        class="tab favorites"
+        class="tab favorites col-sm-6 col-lg-6"
         :class="{ selected: isFavorite }"
         @click="selectTab(true)"
       >
         Favorites
       </div>
     </div>
-    <div id="filters">
-      <div class="search-box-container">
+    <div id="filters" class="row no-gutters">
+      <div class="search-box-container col-sm col-lg mb-1 mb-sm-0">
         <input
           id="search-box"
           type="text"
@@ -26,7 +26,7 @@
           @input="filterByName()"
         />
       </div>
-      <div class="type-container">
+      <div class="type-container col-sm-4 col-lg-4">
         <select class="filter" v-model="type" @change="filterByType()">
           <option class="not-selected" :value="null" disabled hidden>
             Types
@@ -35,7 +35,7 @@
           <option v-for="item in types" :key="item">{{ item }}</option>
         </select>
       </div>
-      <div class="view-container">
+      <div class="view-container col-sm-auto col-lg-auto">
         <div class="list" @click="changeView(true)"></div>
         <div class="grid" @click="changeView(false)"></div>
       </div>
@@ -52,13 +52,13 @@
 </template>
 <style lang="scss">
 #tabs {
-  display: flex;
+  /* display: flex;
   flex-direction: row;
-  justify-content: space-evenly;
+  justify-content: space-evenly; */
   padding: 0 0.75rem;
   margin-top: 0.75rem;
   & .tab {
-    width: 100%;
+    /* width: 100%; */
     height: 50px;
     border: 1px solid #71c1a1;
     color: #71c1a1;
@@ -72,31 +72,16 @@
 }
 
 #filters {
-  display: flex;
+  /* display: flex;
   flex-direction: row;
-  justify-content: space-evenly;
-  padding: 12px;
+  justify-content: space-evenly; */
+  padding: 12px 0;
   box-shadow: 0px 4px 3px -2px rgba(0, 0, 0, 0.2);
-  & .search-box-container {
-    flex-grow: 1;
-    margin-right: 2rem;
-    @media only screen and (min-device-width: 320px) and (max-device-width: 480px) and (-webkit-min-device-pixel-ratio: 2) {
-      margin-right: 0.5rem;
-    }
-  }
-  & .type-container {
-    flex-grow: 1;
-    margin-right: 1rem;
-    flex: 0 0 250px;
-    @media only screen and (min-device-width: 320px) and (max-device-width: 480px) and (-webkit-min-device-pixel-ratio: 2) {
-      margin-right: 0.5rem;
-      flex: 0 0 90px;
-    }
-  }
+
   & .view-container {
     height: 36px;
     padding-right: 5px;
-    flex: 0 0 60px;
+    /* flex: 0 0 60px; */
   }
 }
 
@@ -104,21 +89,21 @@ input#search-box,
 select.filter {
   background-color: #eeeeee;
   width: 100%;
-  height: 2rem;
+  height: 2.25rem;
+  /* height: 2rem; */
   outline: none;
   border: none;
-  padding: 5px 12px;
-  @media only screen and (min-device-width: 320px) and (max-device-width: 480px) and (-webkit-min-device-pixel-ratio: 2) {
+  /* padding: 5px 12px; */
+  /* @media only screen and (min-device-width: 320px) and (max-device-width: 480px) and (-webkit-min-device-pixel-ratio: 2) {
     width: auto;
-  }
+  } */
 }
 input#search-box {
-  height: 2rem;
+  /* height: 2rem; */
   font-size: 0.825rem;
+  padding: 0 12px;
 }
 select.filter {
-  padding: 0.75rem;
-  height: auto;
   cursor: pointer;
 }
 .list,

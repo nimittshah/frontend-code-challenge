@@ -1,71 +1,83 @@
 <template>
-  <div id="pokemons">
-    <div
-      class="view"
-      :class="{
-        'list-view': showAsList,
-        'grid-view': !showAsList,
-        evolutions: isEvolutions,
-      }"
-      v-if="pokemons.length > 0"
-    >
-      <div
-        class="pokemon flex-grow"
-        v-for="pokemon in pokemons"
-        :key="pokemon.id"
-        @click="goToPokemon(pokemon.name)"
-      >
-        <div class="img-container">
-          <img class="pokemon-img" :src="pokemon.image" />
-        </div>
-        <div class="details">
-          <div class="more-details">
-            <div class="title">{{ pokemon.name }}</div>
-            <div class="types" v-if="pokemon.types">
-              {{ pokemon.types.toString() }}
+  <div>
+    <div id="pokemons" class="row">
+      <div class="col">
+        <div
+          class="view row"
+          :class="{
+            'list-view': showAsList,
+            'grid-view': !showAsList,
+            evolutions: isEvolutions,
+          }"
+          v-if="pokemons.length > 0"
+        >
+          <div
+            v-for="pokemon in pokemons"
+            :key="pokemon.id"
+            :class="{
+              'col-12': showAsList,
+              'col-lg-3 col-md-4 col-12': !showAsList,
+            }"
+          >
+            <div
+              class="pokemon row justify-content-around align-items-end"
+              @click="goToPokemon(pokemon.name)"
+            >
+              <div
+                class="img-container text-center"
+                :class="{ 'col-1': showAsList, 'col-12': !showAsList }"
+              >
+                <img class="pokemon-img" :src="pokemon.image" />
+              </div>
+              <div
+                class="details"
+                :class="{ col: showAsList, 'col-12': !showAsList }"
+              >
+                <div class="more-details row align-items-center">
+                  <div class="col">
+                    <div class="title">{{ pokemon.name }}</div>
+                    <div class="types" v-if="pokemon.types">
+                      {{ pokemon.types.toString() }}
+                    </div>
+                  </div>
+                  <div
+                    class="favorite col-auto"
+                    :class="{ 'is-favorite': pokemon.isFavorite }"
+                    @click="
+                      setFavoriteUnFavorite(
+                        $event,
+                        pokemon,
+                        !pokemon.isFavorite
+                      )
+                    "
+                  ></div>
+                </div>
+              </div>
             </div>
           </div>
-          <div
-            class="favorite"
-            :class="{ 'is-favorite': pokemon.isFavorite }"
-            @click="setFavoriteUnFavorite($event, pokemon, !pokemon.isFavorite)"
-          ></div>
         </div>
+        <div v-else class="no-data">No data found!</div>
       </div>
     </div>
-    <div v-else class="no-data">No data found!</div>
   </div>
 </template>
 
 <style lang="scss">
 #pokemons {
   & .view {
-    display: grid;
-    padding: 12px;
-    gap: 12px;
+    padding: 12px 0;
     &.evolutions {
       padding: 12px 0;
     }
     & .pokemon {
       border: 1px solid #dadada;
-      display: flex;
-      justify-content: center;
-      align-items: center;
       cursor: pointer;
       & .img-container {
-        display: flex;
-        justify-content: center;
-        flex-direction: column;
-        flex-grow: 1;
         background-color: white;
       }
       & .details {
         text-align: left;
-        width: 100%;
         background-color: #f3f3f3;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
 
         & .more-details {
           padding: 10px;
@@ -87,9 +99,9 @@
       grid-template-columns: 1fr 1fr;
     }
     & .pokemon {
-      flex-direction: column;
+      margin: 12px 0px;
+      min-height: 310px;
       & .img-container {
-        min-height: 250px;
         & img {
           max-height: 200px;
           max-width: 200px;
@@ -106,12 +118,10 @@
   }
 
   & .list-view {
-    grid-template-columns: 1fr;
     & .pokemon {
-      flex-direction: row;
+      margin-bottom: 12px;
       & .img-container {
         height: 50px;
-        width: 50px;
         & img {
           max-height: 50px;
           max-width: 50px;

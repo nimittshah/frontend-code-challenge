@@ -50,6 +50,7 @@ const actions = {
 
   setFavoriteUnFavorite({ commit }, req) {
     return axios.post('graphql', req, { responseType: 'application/json' }).then(response => {
+      commit('');
       return response;
     })
   }
@@ -71,7 +72,7 @@ const mutations = {
   }
 }
 export default new Vuex.Store({
-  state: state,
-  mutations: mutations,
-  actions: actions
+  state,
+  mutations,
+  actions
 });
