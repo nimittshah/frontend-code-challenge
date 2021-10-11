@@ -45,6 +45,7 @@
       :pokemons="pokemons"
       :showAsList="showAsList"
       :isEvolutions="false"
+      :isShowingFavorites="isFavorite"
     ></pokemon-list>
     <div v-if="isLoading" class="loading"></div>
   </div>

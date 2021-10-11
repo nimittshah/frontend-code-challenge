@@ -53,6 +53,7 @@
         :pokemons="pokemon.evolutions"
         :showAsList="false"
         :isEvolutions="true"
+        :isShowingFavorites="false"
       ></pokemon-list>
     </div>
   </div>

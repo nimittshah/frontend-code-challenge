@@ -119,12 +119,14 @@ export default {
     pokemons: Array,
     showAsList: Boolean,
     isEvolutions: Boolean,
+    isShowingFavorites: Boolean,
   },
   data() {
     return { isFavorite: false, name: "", type: null };
   },
   methods: {
     async setFavoriteUnFavorite($event, _pokemon, _isFavorite) {
+      //Set or unset Favorite item
       $event.stopPropagation();
       _pokemon.isFavorite = _isFavorite;
 
@@ -133,6 +135,12 @@ export default {
         let apiName = "favoritePokemon";
         if (!_isFavorite) {
           apiName = "unFavoritePokemon";
+          if (this.isShowingFavorites) {
+            let ind = this.pokemons.findIndex(
+              (pokemon) => pokemon.id == _pokemon.id
+            );
+            this.pokemons.splice(ind, 1);
+          }
         }
         this.$store
           .dispatch("setFavoriteUnFavorite", {
