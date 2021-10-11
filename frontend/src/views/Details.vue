@@ -61,6 +61,7 @@
 </template>
 <style  lang="scss">
 #pokemon-details {
+  padding: 0.75rem;
   .pokemon-details {
     display: grid;
     border: 1px solid #dadada;
@@ -70,9 +71,14 @@
       padding: 12px;
       position: relative;
       & img {
-        min-height: 450px;
+        height: auto;
+        max-width: 100%;
         min-width: 450px;
+        min-height: auto;
         max-height: 600px;
+        @media only screen and (min-device-width: 320px) and (max-device-width: 480px) and (-webkit-min-device-pixel-ratio: 2) {
+          min-width: 100%;
+        }
       }
       & .sound {
         position: absolute;

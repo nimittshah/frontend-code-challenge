@@ -83,6 +83,9 @@
   }
   & .grid-view {
     grid-template-columns: 1fr 1fr 1fr 1fr;
+    @media only screen and (min-device-width: 320px) and (max-device-width: 480px) and (-webkit-min-device-pixel-ratio: 2) {
+      grid-template-columns: 1fr 1fr;
+    }
     & .pokemon {
       flex-direction: column;
       & .img-container {
@@ -90,6 +93,13 @@
         & img {
           max-height: 200px;
           max-width: 200px;
+          height: auto;
+          @media only screen and (min-device-width: 768px) and (max-device-width: 1024px) and (-webkit-min-device-pixel-ratio: 1) {
+            max-width: 160px;
+          }
+          @media only screen and (min-device-width: 54px) and (max-device-width: 540px) and (-webkit-min-device-pixel-ratio: 2) {
+            max-width: 160px;
+          }
         }
       }
     }
