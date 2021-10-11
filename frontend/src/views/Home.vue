@@ -50,7 +50,90 @@
     <div v-if="isLoading" class="loading"></div>
   </div>
 </template>
+<style lang="scss">
+#tabs {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-evenly;
+  padding: 0 0.75rem;
+  margin-top: 0.75rem;
+  & .tab {
+    width: 100%;
+    height: 50px;
+    border: 1px solid #71c1a1;
+    color: #71c1a1;
+    line-height: 50px;
+    cursor: pointer;
+    &.selected {
+      background-color: #71c1a1;
+      color: white;
+    }
+  }
+}
 
+#filters {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-evenly;
+  padding: 12px;
+  box-shadow: 0px 4px 3px -2px rgba(0, 0, 0, 0.2);
+  & .search-box-container {
+    flex-grow: 7;
+    margin-right: 2rem;
+  }
+  & .type-container {
+    flex-grow: 3;
+    margin-right: 1rem;
+  }
+  & .view-container {
+    height: 36px;
+    padding-right: 5px;
+  }
+}
+
+input#search-box,
+select.filter {
+  background-color: #eeeeee;
+  width: 100%;
+  height: 2rem;
+  outline: none;
+  border: none;
+  padding: 5px 12px;
+}
+input#search-box {
+  width: 100%;
+  height: 2rem;
+  font-size: 0.825rem;
+}
+select.filter {
+  width: 100%;
+  padding: 0.75rem;
+  height: auto;
+  cursor: pointer;
+}
+.list,
+.grid {
+  width: 1.5rem;
+  background-size: contain;
+  display: inline-block;
+  background-repeat: no-repeat;
+  background-position: center;
+  height: 1.825rem;
+  padding: 1px;
+  height: 100%;
+  cursor: pointer;
+}
+
+.list {
+  background-image: url("./../assets/list.png");
+  border-right: 1px solid #eeeeee;
+  margin-right: 3px;
+}
+
+.grid {
+  background-image: url("./../assets/grid.png");
+}
+</style>
 <script>
 import PokemonList from "../components/PokemonList.vue";
 
@@ -58,7 +141,6 @@ export default {
   components: { PokemonList },
   name: "Home",
   data() {
-    this.getPokemonTypes();
     return {
       pokemons: [],
       types: [],
@@ -106,6 +188,16 @@ export default {
         console.error(error);
       }
     },
+    getNextPokemons() {
+      if (this.$route.name == "" || this.$route.name == "home") {
+        let bottomOfWindow =
+          document.documentElement.scrollTop + window.innerHeight >=
+          document.documentElement.offsetHeight;
+        if (bottomOfWindow) {
+          this.getPokemons(false);
+        }
+      }
+    },
     getPokemons(initial = true) {
       //Get all the pokemons initially and also on the scroll
       if (initial) {
@@ -146,20 +238,11 @@ export default {
             }
           });
       } catch (error) {
+        if (!initial) {
+          this.offset -= this.limit;
+        }
         console.error(error);
       }
-    },
-    getNextPokemons() {
-      window.onscroll = () => {
-        if (this.$route.name == "" || this.$route.name == "home") {
-          let bottomOfWindow =
-            document.documentElement.scrollTop + window.innerHeight ===
-            document.documentElement.offsetHeight;
-          if (bottomOfWindow) {
-            this.getPokemons(false);
-          }
-        }
-      };
     },
     goToPokemon(_name) {
       this.$router.push(_name);
@@ -169,8 +252,14 @@ export default {
     this.getPokemons(true);
   },
   mounted() {
+    this.getPokemonTypes();
     console.log(this.$route.name);
-    this.getNextPokemons();
+    this.$nextTick(function () {
+      window.addEventListener("scroll", this.getNextPokemons);
+    });
+  },
+  beforeDestroy() {
+    window.removeEventListener("scroll", this.getNextPokemons);
   },
 };
 </script>
