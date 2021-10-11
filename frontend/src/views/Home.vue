@@ -52,13 +52,9 @@
 </template>
 <style lang="scss">
 #tabs {
-  /* display: flex;
-  flex-direction: row;
-  justify-content: space-evenly; */
   padding: 0 0.75rem;
   margin-top: 0.75rem;
   & .tab {
-    /* width: 100%; */
     height: 50px;
     border: 1px solid #71c1a1;
     color: #71c1a1;
@@ -72,16 +68,12 @@
 }
 
 #filters {
-  /* display: flex;
-  flex-direction: row;
-  justify-content: space-evenly; */
   padding: 12px 0;
   box-shadow: 0px 4px 3px -2px rgba(0, 0, 0, 0.2);
 
   & .view-container {
     height: 36px;
     padding-right: 5px;
-    /* flex: 0 0 60px; */
   }
 }
 
@@ -90,16 +82,10 @@ select.filter {
   background-color: #eeeeee;
   width: 100%;
   height: 2.25rem;
-  /* height: 2rem; */
   outline: none;
   border: none;
-  /* padding: 5px 12px; */
-  /* @media only screen and (min-device-width: 320px) and (max-device-width: 480px) and (-webkit-min-device-pixel-ratio: 2) {
-    width: auto;
-  } */
 }
 input#search-box {
-  /* height: 2rem; */
   font-size: 0.825rem;
   padding: 0 12px;
 }
