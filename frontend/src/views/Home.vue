@@ -18,101 +18,158 @@
     </div>
     <div id="filters">
       <div class="search-box-container">
-        <input id="search-box" type="text" placeholder="Search" />
+        <input
+          id="search-box"
+          type="text"
+          placeholder="Search"
+          v-model="name"
+          @input="filterByName()"
+        />
       </div>
       <div class="type-container">
-        <select class="filter" v-model="type">
-          <option class="not-selected" :value="null" disabled>Types</option>
+        <select class="filter" v-model="type" @change="filterByType()">
+          <option class="not-selected" :value="null" disabled hidden>
+            Types
+          </option>
+          <option class="not-selected" :value="null">All</option>
           <option v-for="item in types" :key="item">{{ item }}</option>
         </select>
       </div>
       <div class="view-container">
-        <div class="list" @click="showAsList = true"></div>
-        <div class="grid" @click="showAsList = false"></div>
+        <div class="list" @click="changeView(true)"></div>
+        <div class="grid" @click="changeView(false)"></div>
       </div>
     </div>
 
-    <div id="pokemons">
-      <div :class="{ 'list-view': showAsList, 'grid-view': !showAsList }">
-        <div class="pokemon" v-for="pokemon in pokemons" :key="pokemon.id">
-          <div class="img-container">
-            <img class="pokemon-img" :src="pokemon.image" />
-          </div>
-          <div class="details">
-            <div class="more-details">
-              <div class="title">{{ pokemon.name }}</div>
-              <div class="type">{{ pokemon.types.toString() }}</div>
-            </div>
-            <div
-              class="favorite"
-              @click="pokemon.isFavorite = !pokemon.isFavorite"
-            >
-              {{ pokemon.isFavorite }}
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
+    <pokemon-list
+      :pokemons="pokemons"
+      :showAsList="showAsList"
+      :isEvolutions="false"
+    ></pokemon-list>
+    <div v-if="isLoading" class="loading"></div>
   </div>
 </template>
 
 <script>
-import axios from "axios";
+import PokemonList from "../components/PokemonList.vue";
 
 export default {
+  components: { PokemonList },
   name: "Home",
   data() {
+    this.getPokemonTypes();
     return {
       pokemons: [],
       types: [],
       isFavorite: false,
+      name: "",
       type: null,
       showAsList: false,
+      offset: 0,
+      limit: 10,
+      isLoading: false,
     };
   },
   methods: {
     selectTab(_showFavorite) {
+      //Change the view to show All or Favorite
       this.isFavorite = _showFavorite;
+      this.getPokemons(true);
+    },
+    filterByName() {
+      //Call this method on Search
+      this.getPokemons(true);
+    },
+    filterByType() {
+      //Call this method on type change.
+      this.getPokemons(true);
+    },
+    changeView(_val) {
+      //Call this method on List view or Grid view.
+      this.showAsList = _val;
+      setTimeout(() => {
+        if (document.body.scrollHeight < window.outerHeight) {
+          this.getPokemons(false);
+        }
+      }, 500);
+    },
+    getPokemonTypes() {
+      //Get all the pokemon Types and show it in the dropdown!
+      try {
+        this.$store
+          .dispatch("getPokemonTypes", { query: ` { pokemonTypes}` })
+          .then((_resp) => {
+            this.types = _resp.pokemonTypes.sort();
+          });
+      } catch (error) {
+        console.error(error);
+      }
+    },
+    getPokemons(initial = true) {
+      //Get all the pokemons initially and also on the scroll
+      if (initial) {
+        this.offset = 0;
+      } else {
+        this.offset += this.limit;
+      }
+      try {
+        this.isLoading = true;
+        let _query =
+          ` { pokemons(query: { limit: ` +
+          this.limit +
+          `, offset: ` +
+          this.offset +
+          `, search:"` +
+          this.name +
+          `", filter:{type:"` +
+          (this.type || "") +
+          `", isFavorite: ` +
+          this.isFavorite +
+          `}}) { edges { id, name, types, isFavorite, sound,  image} } }`;
 
-      this.mounted();
+        this.$store
+          .dispatch("getPokemons", { query: _query })
+          .then((_response) => {
+            this.isLoading = false;
+            if (initial) {
+              this.pokemons = _response.pokemons.edges;
+              if (this.pokemons.length >= this.limit) {
+                setTimeout(() => {
+                  if (document.body.scrollHeight < window.outerHeight) {
+                    this.getPokemons(false);
+                  }
+                }, 500);
+              }
+            } else {
+              this.pokemons = this.pokemons.concat(_response.pokemons.edges);
+            }
+          });
+      } catch (error) {
+        console.error(error);
+      }
+    },
+    getNextPokemons() {
+      window.onscroll = () => {
+        if (this.$route.name == "" || this.$route.name == "home") {
+          let bottomOfWindow =
+            document.documentElement.scrollTop + window.innerHeight ===
+            document.documentElement.offsetHeight;
+          if (bottomOfWindow) {
+            this.getPokemons(false);
+          }
+        }
+      };
+    },
+    goToPokemon(_name) {
+      this.$router.push(_name);
     },
   },
-  computed: {
-    getPokemons() {
-      console.log(this.$store.state.pokemons);
-      return this.$store.state.pokemons.edges;
-    },
-
-    filterTypes() {
-      console.log(this.$store.state.types);
-      /*  return this.data.map((dt) => {
-        type: dt.type;
-      }); */
-    },
+  beforeMount() {
+    this.getPokemons(true);
   },
-  async mounted() {
-    try {
-      let results = await axios({
-        method: "POST",
-        url: "http://localhost:4000/graphql",
-        data: {
-          query:
-            ` { pokemons(query: { limit: 10, offset: 0, search:"", filter:{type:"` +
-            (this.type || "") +
-            `", isFavorite: ` +
-            this.isFavorite +
-            `}}) { edges { id, name, types, isFavorite, sound,  image} } }`,
-        },
-      });
-      this.pokemons = results.data.data.pokemons.edges;
-      this.types = JSON.parse(JSON.stringify(this.pokemons)).map(
-        (_pokemon) => _pokemon.types
-      );
-      this.types = this.types.toString().split(",");
-      this.types = [...new Set(this.types)];
-    } catch (error) {
-      console.error(error);
-    }
+  mounted() {
+    console.log(this.$route.name);
+    this.getNextPokemons();
   },
 };
 </script>

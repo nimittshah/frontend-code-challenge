@@ -1,34 +1,57 @@
-import axios from 'axios'
 import Vue from "vue";
 import Vuex from "vuex";
+import axios from 'axios';
 
 Vue.use(Vuex);
 
 axios.defaults.headers.post['Access-Control-Allow-Origin'] = '*';
-axios.defaults.headers.post['Content-Type'] = 'application/json;charset=utf-8';
+axios.defaults.headers.common['Access-Control-Allow-Origin'] = '*';
 
 const state = {
   pokemons: [],
-  types: []
+  types: [],
+  sound: {}
 }
 const getters = {
   pokemons: (state) => state.pokemons,
-  types: (state) => { return state.types = state.pokemons.map(_pokemon => { return { 'type': _pokemon.type } }) }
 }
 
 const actions = {
-  getPokemons({ commit }, req) {
-    axios.post('pokemons', req)
+  getSounds({ commit }, req) {
+    console.log("Id : " + req);
+    return axios.get('sounds/' + req, { responseType: 'arraybuffer' })
       .then(response => {
-        commit('SET_POKEMONS', response.data)
+        commit('SET_POKEMON_SOUND', response.data)
+        return response.data;
+      })
+  },
+  getPokemons({ commit }, req) {
+    return axios.post('graphql', req)
+      .then(response => {
+        commit('SET_POKEMONS', response.data.data.pokemons);
+        return response.data.data;
       })
   },
 
-  getPokemon({ commit }, req) {
-    axios.get('pokemon/' + req)
+  getPokemonByName({ commit }, req) {
+    return axios.post('graphql', req)
       .then(response => {
-        commit('SET_POKEMON', response.data)
+        commit('SET_POKEMON', response.data);
+        return response.data.data;
       })
+  },
+
+  getPokemonTypes({ commit }, req) {
+    return axios.post('graphql', req, { responseType: 'application/json' }).then(response => {
+      commit('SET_POKEMON_TYPES', response.data.data.pokemonTypes);
+      return response.data.data;
+    })
+  },
+
+  setFavoriteUnFavorite({ commit }, req) {
+    return axios.post('graphql', req, { responseType: 'application/json' }).then(response => {
+      return response;
+    })
   }
 }
 const mutations = {
@@ -38,11 +61,17 @@ const mutations = {
 
   SET_POKEMON(state, pokemon) {
     state.pokemon = pokemon;
+  },
+
+  SET_POKEMON_SOUND(state, sound) {
+    state.sound = sound;
+  },
+  SET_POKEMON_TYPES(state, types) {
+    state.types = types;
   }
 }
 export default new Vuex.Store({
-  state,
-  getters,
-  actions,
-  mutations
+  state: state,
+  mutations: mutations,
+  actions: actions
 });
